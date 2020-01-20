@@ -19,27 +19,68 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Principal</span></a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Sobre</a>
+                        <a class="nav-link" href="/">Principal</span></a>
                     </li>
               </ul>
             </div>
           </nav>
 
         <div class="container-fluid">
-            <form class="form-inline" method="post">
-                <div class="form-group mb-2">
-                    <label for="cidade">Informe sua localização (Cidade, Estado):</label>
-                    <input type="text" class="form-control ml-2" id="cidade" name="cidade" value="<%=cidade%>" required>
-                    <input type="hidden" id="lat" name="lat">
-                    <input type="hidden" id="lng" name="lng">
+            <div class="row my-5">
+                <div class="col">
+                    <form class="form-inline justify-content-center" method="post">
+                        <div class="form-group mb-2">
+                            <label for="cidade">Localização:</label>
+                            <input type="text" class="form-control ml-2" id="cidade" name="cidade" value="<%=cidade%>" placeholder="Ex.: Campinas/São Paulo" required>
+                            <input type="hidden" id="lat" name="lat" value="<%=lat%>">
+                            <input type="hidden" id="lng" name="lng" value="<%=lng%>">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary mb-2 ml-2" id="buscar">Buscar</button>
+                    </form>
+
+                    <div class="alert alert-warning w-25 mx-auto d-none" role="alert">
+                        Cidade não encontrada!
+                    </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary mb-2 ml-2">Buscar Músicas</button>
-            </form>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <% if(tracks) { %>
+                        <div class="alert alert-primary" role="info">
+                            A temperatura atual é <strong><%=temp%>°C</strong>. Veja abaixo o top 20 do gênero <%= genre %>:
+                        </div>
+
+                        <table class="table table-sm table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Artista</th>
+                                    <th scope="col">Álbum</th>
+                                    <th scope="col">Preview</th>
+                                </tr>
+                            </thead>
+                        
+                            <tbody>
+                                <% tracks.forEach(track => { %>
+                                <tr>
+                                    <th scope="row"><%= track.name %></th>
+                                    <td><%= track.artistName %></td>
+                                    <td><%= track.albumName %></td>
+                                    <td>
+                                        <audio controls>
+                                            <source src="<%= track.previewURL %>" type="audio/mpeg">
+                                            <%= track.previewURL %>
+                                        </audio>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } %>
+                </div>
+            </div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
@@ -49,5 +90,6 @@
         <% if(!cidade) { %>
         <script src="/js/geo.js"></script>
         <% } %>
+        <script src="/js/script.js"></script>
     </body>
 </html>
