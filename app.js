@@ -55,6 +55,30 @@ app.post("/", function(req, res){
     });
 });
 
+app.get("/weather/:location", function(req, res){
+    let host = req.protocol + '://' + req.get('Host')
+    const location = req.params.location;
+
+    request(`https://geocode.xyz/${location}?geoit=json`, function (e,r,b) {
+        if (!e && r.statusCode == 200) {
+            let data = JSON.parse(b);
+
+            let lat = data.latt;
+            let lng = data.longt;
+
+            request(`${host}/weather/${lat}/${lng}`, function (e,r,b) {
+                if (!e && r.statusCode == 200) {
+                    res.send(JSON.parse(b));
+                } else {
+                    res.send({"error": "Could not fetch data."});
+                }
+            });
+        } else {
+            res.send({"error": "Could not fetch data."});
+        }
+    });
+});
+
 app.get("/weather/:lat/:lng", function(req, res){
     const lat = req.params.lat;
     const lng = req.params.lng;
