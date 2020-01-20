@@ -2,6 +2,7 @@
   "name": "ingaia",
   "version": "1.0.0",
   "description": "InGaia Test App",
+  "repository": "https://github.com/dgbauleo/ingaia-t2m",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
