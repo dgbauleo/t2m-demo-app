@@ -18,11 +18,11 @@ app.get("/", function(req, res){
         temp: null,
         genre: null,
         tracks: null
-    })
+    });
 });
 
 app.post("/", function(req, res){
-    let host = req.get("origin")
+    let host = req.protocol + '://' + req.get('Host')
 
     let lat = req.body.lat;
     let lng = req.body.lng;
@@ -32,6 +32,19 @@ app.post("/", function(req, res){
 
         if (!e && r.statusCode == 200) {
             data = JSON.parse(b);
+        }
+
+        if (!data.main) {
+            res.render("index", {
+                cidade: null,
+                lat: null,
+                lng: null,
+                temp: null,
+                genre: null,
+                tracks: null
+            });
+
+            return;
         }
 
         let temp = data.main.temp;
@@ -83,7 +96,7 @@ app.get("/weather/:lat/:lng", function(req, res){
     const lat = req.params.lat;
     const lng = req.params.lng;
 
-    request(`http://api.openweathermap.org/data/2.5/weather?appid=e579ea1796edcda3e1615d7daec85017&units=metric&lat=${lat}&lon=${lng}`, function (e,r,b) {
+    request(`http://api.openweathermap.org/data/2.5/weather?appid=adbdd42ee2fd56f9f1df9a0d91abeb0f&units=metric&lat=${lat}&lon=${lng}`, function (e,r,b) {
         if (!e && r.statusCode == 200) {
             res.send(JSON.parse(b));
         } else {
