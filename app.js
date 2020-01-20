@@ -49,11 +49,7 @@ app.post("/", function(req, res){
 
         let temp = data.main.temp;
 
-        let genre = null;
-
-        if (temp < 10) genre = "classical"
-        else if (temp >= 10 && temp <= 25) genre = "rock"
-        else genre = "pop"
+        let genre = get_genre(temp);
 
         request(`${host}/tracks/${genre}`, function(e,r,b){
             res.render("index", {
@@ -65,6 +61,19 @@ app.post("/", function(req, res){
                 tracks: JSON.parse(b).tracks
             });
         });
+    });
+});
+
+app.get("/weather/:lat/:lng", function(req, res){
+    const lat = req.params.lat;
+    const lng = req.params.lng;
+
+    request(`http://api.openweathermap.org/data/2.5/weather?appid=adbdd42ee2fd56f9f1df9a0d91abeb0f&units=metric&lat=${lat}&lon=${lng}`, function (e,r,b) {
+        if (!e && r.statusCode == 200) {
+            res.send(JSON.parse(b));
+        } else {
+            res.send({"error": "Could not fetch data."});
+        }
     });
 });
 
@@ -92,19 +101,6 @@ app.get("/weather/:location", function(req, res){
     });
 });
 
-app.get("/weather/:lat/:lng", function(req, res){
-    const lat = req.params.lat;
-    const lng = req.params.lng;
-
-    request(`http://api.openweathermap.org/data/2.5/weather?appid=adbdd42ee2fd56f9f1df9a0d91abeb0f&units=metric&lat=${lat}&lon=${lng}`, function (e,r,b) {
-        if (!e && r.statusCode == 200) {
-            res.send(JSON.parse(b));
-        } else {
-            res.send({"error": "Could not fetch data."});
-        }
-    });
-});
-
 app.get("/tracks/:genre", function(req, res){
     let genres = [
         { "id": "g.5",      "name": "rock" },
@@ -126,6 +122,44 @@ app.get("/tracks/:genre", function(req, res){
         res.send({"error": "Genre not available."});
     }
 });
+
+app.get("/listen/:location", function(req, res){
+    let host = req.protocol + '://' + req.get('Host')
+
+    let location = req.params.location;
+
+    request(`${host}/weather/${location}`, function (e,r,b) {
+        if (!e && r.statusCode == 200) {
+            let data = JSON.parse(b);
+            
+            if (!data.main) {
+                res.send({"error": "Could not fetch data."});
+            }
+
+            let temp = data.main.temp;
+
+            let genre = get_genre(temp);
+
+            request(`${host}/tracks/${genre}`, function(e,r,b){
+                if (!e && r.statusCode == 200) {
+                    res.send(JSON.parse(b));
+                } else {
+                    res.send({"error": "Could not fetch data."});
+                }
+            });
+        } else {
+            res.send({"error": "Could not fetch data."});
+        }
+    });
+});
+
+function get_genre(temp) {
+    let genre;
+    if (temp < 10) genre = "classical"
+    else if (temp >= 10 && temp <= 25) genre = "rock"
+    else genre = "pop"
+    return genre;
+}
 
 app.listen(port, function(){
     console.log(`App listening on port ${port}`);
