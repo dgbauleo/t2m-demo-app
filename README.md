@@ -12,6 +12,7 @@ Para o frontend foi utilizado o Bootstrap. Não havia necessidade de nenhum stac
   - /tracks/[genero]: Retorna as músicas do top 20 do Napster para o estilo especificado (funciona com pop, rock e classical)
   - /weather/[lat]/[lng]: Retorna a temperatura da coordenada especificada
   - /weather/[localização]: Retorna a temperatura da localização especificada
+  - /listen/[localização]: Retorna as músicas do top 20 do gênero correspondente à temperatura da cidade informada
 
 ## Páginas criadas:
   - GET /: Página principal. Tenta pegar a localização atual com geocoding para preencher o formulário.
